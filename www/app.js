@@ -4,11 +4,21 @@ const empty = document.querySelector('#empty');
 const usernameElement = document.querySelector('#username');
 
 async function getUser() {
-    // TODO
+    const userName = await fetch("/.auth/me").then(res => res.json().then(data => data.clientPrincipal.userDetails))
+    document.querySelector("#username").textContent = userName
 }
 
-async function updateTask() {
-    // TODO
+async function updateTask(e) {
+    const taskId = this.closest('li').getAttribute('id');
+    const status = e.target.checked ? 'checked' : '';
+
+    const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+    });
 }
 
 taskformElement.addEventListener('submit', async (e) => {
@@ -58,7 +68,7 @@ function generateTask(task) {
     const fragment = range.createContextualFragment(tmpl);
 
     fragment.querySelector('input').addEventListener('change', updateTask);
-    
+
     return fragment;
 }
 
